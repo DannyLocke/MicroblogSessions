@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<style>
+    Body{
+    background-color: lightgreen;
+    }
+</style>
+
+<form action = "/createMessages" method = "post">
+    <input type = "text" placeholder = "Write a message" name = "createMessage"/>
+    <button type="submit">Submit</button>
+</form>
+
+<br>
+
+<form action = "/editMessages" method = "post">
+    <input type = "number" placeholder = "Message #" name = "num"/>
+    <input type = "text" placeholder="Edit message" name = "editMessage"/>
+    <button type="edit">Edit</button>
+</form>
+
+<br>
+
+<form action = "/deleteMessages" method = "post">
+    <input type = "number" placeholder = "Which message do you want deleted?" name = "deleteMessage"/>
+    <button type="delete">Delete</button>
+</form>
+Messages by {{createUser}}:
+
+<ol>
+
+    {{#createMessage}}
+    <li>
+        {{note}}
+    </li>
+    {{/createMessage}}
+
+</ol>
+
+<form action="/logout" method="post">
+    <button type="submit">Logout</button>
+</form>
+
+</body>
+</html>
