@@ -4,14 +4,12 @@ import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Main {
 
+    //to store users
     static HashMap<String, User> userHashMap = new HashMap<>();
-    public static ArrayList<Message> list = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
 
@@ -37,13 +35,12 @@ public class Main {
 
                         n.put("createUser", user.name);
                         n.put("userPassword", user.password);
-                        n.put("createMessage", list);
+                        n.put("createMessage", User.list);
                         return new ModelAndView(n, "messages.html");
                     }
                 }),
                 new MustacheTemplateEngine()
-
-        );
+        );//end Spark.get
 
         //post user and password
         Spark.post(
@@ -53,9 +50,10 @@ public class Main {
                     Session session = request.session();
                     String name = request.queryParams("createUser");
                     String password = request.queryParams("userPassword");
-//                    if(name == null || password == null){
-//                        throw new Exception("Please enter name and password.");
-//                    }
+
+                    if(name == null || password == null){
+                        throw new Exception("Please enter name and password.");
+                    }
 
                     //create object with name & password
                     User user = userHashMap.get(name);
@@ -73,7 +71,7 @@ public class Main {
                     response.redirect("/");
                     return "";
                 })
-        );
+        );//end Spark.post /index
 
         //post messages
         Spark.post(
@@ -81,20 +79,22 @@ public class Main {
 
                 ((request, response) -> {
                     Session session = request.session();
+                    String name = session.attribute("createUser");
+                    User user = userHashMap.get(name);
+
+                    if(user == null){
+                        throw new Exception("Please log in first");
+                    }
+
                     String note = request.queryParams("createMessage");
 
-                    User user = userHashMap.get(note);
-
-                    session.attribute("createMessage", note);
-                    session.attribute("createMessage", 0);
-
-                    Message x = new Message(note, 0);
-                    list.add(x);
+                    Message x = new Message(note);
+                    user.list.add(x);
 
                     response.redirect("/");
                     return "";
                 })
-        );
+        );//end Spark.post /createMessages
 
         //edit messages
         Spark.post(
@@ -102,49 +102,46 @@ public class Main {
 
                 ((request, response) -> {
                     Session session = request.session();
-                    String note = request.queryParams("editMessage");
+                    String name = session.attribute("createUser");
 
-                    int num = Integer.valueOf(request.queryParams("number"));
+                    User user = userHashMap.get(name);
 
-                    User user = userHashMap.get(note);
-//                    if (num <= 0 || num - 1 >= user.list.size()) {
-//                        throw new Exception("invalid entry");
-//                    }
+                    String num = request.queryParams("num");
+                    int x = Integer.parseInt(num);
 
-                    list.get(num - 1);
-                    Message m1 = new Message(note, 0);
+                    //specifies which message to select and edit
+                    user.list.get(x - 1);
+                    user.list.remove(x - 1);
 
-                    m1.note = note;
-                    list.set(num - 1, m1);
+                    //repost edited message
+                    String editMessage = request.queryParams("editMessage");
+                    Message note = new Message(editMessage);
+                    user.list.add(x - 1, note);
+
 
                     response.redirect("/");
                     return "";
                 }
-                ));
+                ));//end Spark.post /editMessages
 
         //delete messages
         Spark.post(
                 "/deleteMessages",
                 ((request, response) -> {
                     Session session = request.session();
-                    String note = session.attribute("deleteMessage");
+                    String name = session.attribute("createUser");
 
-                    int num = Integer.valueOf(request.queryParams("number"));
+                    User user = userHashMap.get(name);
 
-                    User user = userHashMap.get(note);
-//                    if(num <= 0 || num - 1 >= user.list.size()){
-//                        throw new   Exception("invalid entry");
-//                    }
-                    list.get(num-1);
-                    Message m1 = new Message(note, 0);
+                    String deleteMessage = request.queryParams("deleteMessage");
 
-                    m1.note = note;
-                    list.set(num - 1, m1);
+                    int x = Integer.parseInt(deleteMessage);
+                    user.list.remove(x - 1);
 
                     response.redirect("/");
                     return "";
                 })
-        );
+        );//end Spark.post /deleteMessages
 
         Spark.post(
                 "/logout",
@@ -154,6 +151,8 @@ public class Main {
                     response.redirect("/");
                     return "";
                 })
-        );
+        );//end Spark.post /logout
+
     }//end main()
+
 }//end class Main

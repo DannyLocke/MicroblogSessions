@@ -6,11 +6,9 @@ package com.ironyard;
 
 public class Message {
     String note;
-    int num;
 
-    public Message(String m, int num){
+    public Message(String m){
 
         this.note = m;
-        this.num = num;
     }
 }

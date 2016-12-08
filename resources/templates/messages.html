@@ -20,16 +20,16 @@
 <br>
 
 <form action = "/editMessages" method = "post">
-    <input type = "number" placeholder = "Message #" name = "num"/>
+    <input type = "text" placeholder = "Message #" name = "num"/>
     <input type = "text" placeholder="Edit message" name = "editMessage"/>
-    <button type="edit">Edit</button>
+    <button type="submit">Edit</button>
 </form>
 
 <br>
 
 <form action = "/deleteMessages" method = "post">
-    <input type = "number" placeholder = "Which message do you want deleted?" name = "deleteMessage"/>
-    <button type="delete">Delete</button>
+    <input type = "text" placeholder = "Which message do you want deleted?" name = "deleteMessage"/>
+    <button type="submit">Delete</button>
 </form>
 Messages by {{createUser}}:
 
